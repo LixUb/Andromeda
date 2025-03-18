@@ -8,10 +8,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +30,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -42,8 +51,15 @@ import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -51,6 +67,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
@@ -61,6 +78,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -74,26 +92,34 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import icb.sch.projectrayy.ui.theme.ProjectRayyTheme
 import icb.sch.projectrayy.ui.theme.SkyBlue
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -139,7 +165,7 @@ fun MyTopAppBarWithSearch(title: String, drawerState: DrawerState) {
                 TextField(
                     value = searchText.value,
                     onValueChange = { searchText.value = it },
-                    placeholder = { Text("Search", color = Color.White.copy(alpha = 0.7f)) },
+                    placeholder = { Text("Find issues...", color = Color.White.copy(alpha = 0.7f)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     trailingIcon = {
@@ -175,32 +201,63 @@ fun MyTopAppBarWithSearch(title: String, drawerState: DrawerState) {
                     )
                 )
             } else {
-                Text(text = title, color = Color.White)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = title,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "MAN IC",
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 14.sp
+                    )
+                }
             }
         },
         navigationIcon = {
             if(!showSearchBar.value) {
-                IconButton(onClick = {
-                    scope.launch {
-                        drawerState.open()
-                    }
-                }) {
-                    Icon(Icons.Filled.Menu, "Menu", tint = Color.White)
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.2f))
+                ) {
+                    Icon(Icons.Rounded.Menu, "Menu", tint = Color.White)
                 }
             }
         },
         actions = {
             if(!showSearchBar.value) {
-                IconButton(onClick = {
-                    showSearchBar.value = true
-                }) {
+                IconButton(
+                    onClick = { showSearchBar.value = true },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.2f))
+                ) {
                     Icon(Icons.Filled.Search, "Search", tint = Color.White)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = { /* Handle notifications */ },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha =.2f))
+                ) {
+                    Icon(Icons.Rounded.Notifications, "Notifications", tint = Color.White)
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = SkyBlue
-        )
+        ),
+        modifier = Modifier.shadow(8.dp)
     )
 }
 
@@ -252,7 +309,8 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -261,16 +319,18 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Upload School Complaint",
+                    text = "Report School Issue",
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
                 )
 
                 OutlinedTextField(
@@ -278,7 +338,8 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                     onValueChange = { description = it },
                     label = { Text("Description") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 3,
+                    shape = RoundedCornerShape(8.dp)
                 )
 
                 OutlinedTextField(
@@ -287,8 +348,9 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                     label = { Text("Location in School") },
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
-                        Icon(Icons.Filled.LocationOn, contentDescription = "Location")
-                    }
+                        Icon(Icons.Filled.LocationOn, contentDescription = "Location", tint = SkyBlue)
+                    },
+                    shape = RoundedCornerShape(8.dp)
                 )
 
                 OutlinedTextField(
@@ -298,15 +360,18 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = { showDatePicker.value = true }) {
-                            Icon(Icons.Filled.DateRange, contentDescription = "Select date")
+                            Icon(Icons.Filled.DateRange, contentDescription = "Select date", tint = SkyBlue)
                         }
                     },
-                    readOnly = true
+                    readOnly = true,
+                    shape = RoundedCornerShape(8.dp)
                 )
 
                 Button(
                     onClick = { pickImageLauncher.launch("image/*") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = SkyBlue)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -325,14 +390,18 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                 ) {
                     Button(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        modifier = Modifier.weight(1f).padding(end = 8.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                     ) {
                         Text("Cancel")
                     }
                     Button(
                         onClick = { onSubmit(name, description, location, selectedImage) },
                         modifier = Modifier.weight(1f).padding(start = 8.dp),
-                        enabled = name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty() && date.isNotEmpty() && selectedImage != null
+                        enabled = name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty() && date.isNotEmpty() && selectedImage != null,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SkyBlue)
                     ) {
                         Text("Submit")
                     }
@@ -343,7 +412,7 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
 }
 
 @Composable
-fun SchoolComplaintCard(complaint: SchoolComplaint) {
+fun SchoolComplaintCard(complaint: SchoolComplaint, index: Int) {
     val statusColor = when (complaint.status) {
         "Completed" -> Color(0xFF4CAF50) // Green
         "In Progress" -> Color(0xFF2196F3) // Blue
@@ -351,103 +420,158 @@ fun SchoolComplaintCard(complaint: SchoolComplaint) {
         else -> Color(0xFFFF5722) // Orange for "In Review" or others
     }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
+    // Staggered animation for cards
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = true) {
+        delay(100L * index)
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(300))
     ) {
-        Column(
+        ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(bottom = 12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Filled.School,
-                    contentDescription = "School Complaint",
-                    tint = SkyBlue,
-                    modifier = Modifier.size(24.dp)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = complaint.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = complaint.category,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                }
-
+                // Header with category badge
                 Box(
                     modifier = Modifier
-                        .background(statusColor.copy(alpha = 0.2f), shape = RoundedCornerShape(4.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    SkyBlue,
+                                    SkyBlue.copy(alpha = 0.8f)
+                                )
+                            )
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Text(
-                        text = complaint.status,
-                        color = statusColor,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = complaint.category,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .background(Color.White, shape = RoundedCornerShape(12.dp))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.CheckCircle,
+                                    contentDescription = "Status",
+                                    tint = statusColor,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Text(
+                                    text = complaint.status,
+                                    color = statusColor,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                // Content
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.School,
+                            contentDescription = "School Complaint",
+                            tint = SkyBlue,
+                            modifier = Modifier.size(24.dp)
+                        )
 
-            Text(
-                text = complaint.description,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
+                        Spacer(modifier = Modifier.width(8.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Divider()
-            Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = complaint.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.LocationOn,
-                    contentDescription = "Location",
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = complaint.location,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = complaint.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
-                Icon(
-                    imageVector = Icons.Filled.DateRange,
-                    contentDescription = "Date",
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = complaint.date,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Divider(color = Color.LightGray, thickness = 1.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocationOn,
+                                contentDescription = "Location",
+                                modifier = Modifier.size(16.dp),
+                                tint = SkyBlue
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = complaint.location,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.DateRange,
+                                contentDescription = "Date",
+                                modifier = Modifier.size(16.dp),
+                                tint = SkyBlue
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = complaint.date,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -496,7 +620,7 @@ fun MainScreen() {
     // Navigation items
     val navItems = listOf(
         NavItem("History", Icons.Filled.History),
-        NavItem("Upload", Icons.Filled.Upload),
+        NavItem("Upload", Icons.Rounded.Upload),
         NavItem("Account", Icons.Filled.AccountCircle)
     )
 
@@ -512,10 +636,28 @@ fun MainScreen() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 48.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    SkyBlue.copy(alpha = 0.7f),
+                                    SkyBlue
+                                )
+                            )
+                        )
+                        .padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // No text header here as requested
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Filled.School,
+                            contentDescription = "School Logo",
+                            tint = Color.White,
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 drawerItems.forEach { item ->
                     NavigationDrawerItem(
@@ -529,7 +671,9 @@ fun MainScreen() {
                         },
                         selected = false,
                         onClick = item.onClick,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                         colors = NavigationDrawerItemDefaults.colors(
                             unselectedContainerColor = SkyBlue,
                             unselectedIconColor = Color.White,
@@ -545,7 +689,9 @@ fun MainScreen() {
             bottomBar = {
                 NavigationBar(
                     containerColor = SkyBlue,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    tonalElevation = 8.dp,
+                    modifier = Modifier.shadow(8.dp)
                 ) {
                     navItems.forEachIndexed { index, item ->
                         NavigationBarItem(
@@ -570,7 +716,14 @@ fun MainScreen() {
                                         context.startActivity(Intent(context, LoginActivity::class.java))
                                     }
                                 }
-                            }
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color.White,
+                                selectedTextColor = Color.White,
+                                indicatorColor = Color.White.copy(alpha = 0.2f),
+                                unselectedIconColor = Color.White.copy(alpha = 0.7f),
+                                unselectedTextColor = Color.White.copy(alpha = 0.7f)
+                            )
                         )
                     }
                 }
@@ -578,10 +731,11 @@ fun MainScreen() {
             floatingActionButton = {
                 ExtendedFloatingActionButton(
                     onClick = { showUploadDialog = true },
-                    icon = { Icon(Icons.Filled.Upload, contentDescription = "Upload") },
+                    icon = { Icon(Icons.Rounded.Upload, contentDescription = "Upload") },
                     text = { Text("Report Issue") },
                     containerColor = SkyBlue,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    modifier = Modifier.shadow(8.dp, shape = RoundedCornerShape(16.dp))
                 )
             }
         ) { innerPadding ->
@@ -589,23 +743,40 @@ fun MainScreen() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(Color.White)
+                    .background(Color(0xFFF5F5F5)) // Light gray background
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = "School Complaints Feed",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                    // Category chips would go here
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Recent Issues",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                    LazyColumn {
-                        items(schoolComplaints) { complaint ->
-                            SchoolComplaintCard(complaint)
+                        Text(
+                            text = "View All",
+                            color = SkyBlue,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    LazyColumn(
+                        contentPadding = PaddingValues(bottom = 80.dp) // Add padding for FAB
+                    ) {
+                        itemsIndexed(schoolComplaints) { index, complaint ->
+                            SchoolComplaintCard(complaint, index)
                         }
                     }
                 }
