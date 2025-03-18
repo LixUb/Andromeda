@@ -464,10 +464,10 @@ fun MainScreen() {
 
     // Sample data for school complaints
     val schoolComplaints = listOf(
-        SchoolComplaint("1", "Pintu Asrama Rusak", "Pintu belakang kamar 19 rusak (gagangnya lepas).", "room 19 Aslam", "17/03/2025", "Pending", "Facilities"),
-        SchoolComplaint("2", "XI D Smart TV", "Smart TV kelas XI D rusak tidak bisa dijalankan", "XI D CLASS", "15/03/2025", "Completed", "Equipment"),
-        SchoolComplaint("3", "Plafon Masjid Rusak", "Plafon masjid rusak, bagian bannat plafonnya berlubang", "Masjid Miftahul Ulum", "14/03/2025", "Pending", "Facilities"),
-        SchoolComplaint("4", "Ketertiban Kantin", "Siswa MAN INSAN CENDEKIA tidak tertib dalam mengambil makanan dan minuman dari kantin", "Kantin MAN IC Batam", "13/03/2025", "Completed", "Safety"),
+        SchoolComplaint("1", "Pintu Asrama Rusak", "Pintu belakang kamar 19 rusak (gagangnya lepas).", "room 19 Aslam", "17/03/2025", "Pending", "SarPras"),
+        SchoolComplaint("2", "XI D Smart TV", "Smart TV kelas XI D rusak tidak bisa dijalankan", "XI D CLASS", "15/03/2025", "Completed", "SarPras"),
+        SchoolComplaint("3", "Plafon Masjid Rusak", "Plafon masjid rusak, bagian bannat plafonnya berlubang", "Masjid Miftahul Ulum", "14/03/2025", "In Progress", "SarPras"),
+        SchoolComplaint("4", "Ketertiban Kantin", "Siswa MAN INSAN CENDEKIA tidak tertib dalam mengambil makanan dan minuman dari kantin", "Kantin MAN IC Batam", "13/03/2025", "Completed", "Keasramaan"),
     )
 
     val drawerItems = listOf(
