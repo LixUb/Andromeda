@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,11 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import icb.sch.projectrayy.ui.theme.ProjectRayyTheme
+import icb.sch.projectrayy.ui.theme.SkyBlue
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +49,7 @@ class LoginActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ProjectRayyTheme {
-                LoginScreen(onBackPressed = { finish() })
+                LoginScreen(onNavigateUp = { finish() })
             }
         }
     }
@@ -58,7 +57,7 @@ class LoginActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onBackPressed: () -> Unit) {
+fun LoginScreen(onNavigateUp: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -67,12 +66,16 @@ fun LoginScreen(onBackPressed: () -> Unit) {
             TopAppBar(
                 title = { Text("Login", color = Color.White) },
                 navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(Icons.Filled.ArrowBack, "Back", tint = Color.White)
+                    IconButton(onClick = onNavigateUp) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customGreen
+                    containerColor = SkyBlue // Update to Sky Blue
                 )
             )
         }
@@ -87,14 +90,13 @@ fun LoginScreen(onBackPressed: () -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Welcome Back",
                     style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
@@ -102,12 +104,11 @@ fun LoginScreen(onBackPressed: () -> Unit) {
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Email") },
-                    leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email") },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    )
+                    leadingIcon = {
+                        Icon(Icons.Filled.Email, contentDescription = "Email")
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -116,34 +117,39 @@ fun LoginScreen(onBackPressed: () -> Unit) {
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Password") },
-                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password") },
                     modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(Icons.Filled.Lock, contentDescription = "Password")
+                    },
                     visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    )
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextButton(
+                    onClick = { /* Handle forgot password */ },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Forgot Password?")
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { /* Handle login */ },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = customGreen
-                    )
+                    onClick = { /* Handle login logic */ },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Login")
+                    Text("Log In")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Don't have an account? Sign Up",
-                    modifier = Modifier.padding(16.dp),
-                    color = customGreen
-                )
+                TextButton(
+                    onClick = { /* Handle registration */ }
+                ) {
+                    Text("Don't have an account? Sign Up")
+                }
             }
         }
     }

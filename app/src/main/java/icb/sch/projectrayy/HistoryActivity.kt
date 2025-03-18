@@ -13,13 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,8 +36,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import icb.sch.projectrayy.ui.theme.ProjectRayyTheme
 
@@ -46,30 +49,30 @@ class HistoryActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ProjectRayyTheme {
-                HistoryScreen(onBackPressed = { finish() })
+                HistoryScreen(onNavigateUp = { finish() })
             }
         }
     }
 }
 
-data class HistoryItem(
+data class ReportItem(
     val id: String,
     val title: String,
-    val date: String,
+    val description: String,
     val location: String,
+    val date: String,
     val status: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(onBackPressed: () -> Unit) {
-    // Sample history data
-    val historyItems = listOf(
-        HistoryItem("1", "Perbaikan Jalan Berlubang", "12/03/2025", "Jl. Raya Kamal No. 15", "Completed"),
-        HistoryItem("2", "Penerangan Jalan", "05/03/2025", "Jl. Pahlawan Blok C", "In Progress"),
-        HistoryItem("3", "Saluran Air Tersumbat", "27/02/2025", "Jl. Melati RT 04/02", "Under Review"),
-        HistoryItem("4", "Pohon Tumbang", "21/02/2025", "Taman Kota Blok A", "Completed"),
-        HistoryItem("5", "Kabel Listrik Putus", "15/02/2025", "Perumahan Indah Blok F5", "Completed")
+fun HistoryScreen(onNavigateUp: () -> Unit) {
+    // Sample data
+    val reportItems = listOf(
+        ReportItem("1", "Road Damage Report", "There's a large pothole on the main road", "Jl. Sudirman No. 123", "15/03/2025", "In Progress"),
+        ReportItem("2", "Broken Street Light", "Street light not working near the park", "Taman Kota", "10/03/2025", "Completed"),
+        ReportItem("3", "Garbage Collection Issue", "Garbage hasn't been collected for 3 days", "Perumahan Indah Blok A2", "05/03/2025", "Pending"),
+        ReportItem("4", "Flooding Problem", "Water drainage system is clogged", "Jl. Melati No. 45", "01/03/2025", "In Review")
     )
 
     Scaffold(
@@ -77,12 +80,16 @@ fun HistoryScreen(onBackPressed: () -> Unit) {
             TopAppBar(
                 title = { Text("Report History", color = Color.White) },
                 navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(Icons.Filled.ArrowBack, "Back", tint = Color.White)
+                    IconButton(onClick = onNavigateUp) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customGreen
+                    containerColor = Color.Blue
                 )
             )
         }
@@ -91,15 +98,15 @@ fun HistoryScreen(onBackPressed: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.White)
+                .background(Color.White.copy(alpha = 0.95f))
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                items(historyItems) { item ->
-                    HistoryItemCard(item)
+                items(reportItems) { report ->
+                    ReportCard(report)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
@@ -108,49 +115,65 @@ fun HistoryScreen(onBackPressed: () -> Unit) {
 }
 
 @Composable
-fun HistoryItemCard(item: HistoryItem) {
-    val statusColor = when (item.status) {
-        "Completed" -> Color(0xFF4CAF50)  // Green
+fun ReportCard(report: ReportItem) {
+    val statusColor = when (report.status) {
+        "Completed" -> Color(0xFF4CAF50) // Green
         "In Progress" -> Color(0xFF2196F3) // Blue
-        else -> Color(0xFFFFA000)          // Amber for Under Review
+        "Pending" -> Color(0xFFFFC107) // Yellow
+        else -> Color(0xFFFF5722) // Orange for "In Review" or others
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = report.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(statusColor.copy(alpha = 0.2f))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = report.status,
+                        color = statusColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.CalendarToday,
-                    contentDescription = "Date",
-                    tint = Color.Gray,
-                    modifier = Modifier.width(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = item.date,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
+            Text(
+                text = report.description,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -158,34 +181,29 @@ fun HistoryItemCard(item: HistoryItem) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location",
-                    tint = Color.Gray,
-                    modifier = Modifier.width(20.dp)
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.Gray
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = item.location,
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = report.location,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            Divider()
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Status:",
-                    style = MaterialTheme.typography.bodyMedium
+                Icon(
+                    imageVector = Icons.Filled.DateRange,
+                    contentDescription = "Date",
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.Gray
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = item.status,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = statusColor
+                    text = report.date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
                 )
             }
         }
