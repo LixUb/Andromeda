@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -98,6 +99,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.clickable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,6 +214,7 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
     var location by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
+    var selectedCategory by remember { mutableStateOf("") }
     val context = LocalContext.current
     val showDatePicker = remember { mutableStateOf(false) }
 
@@ -247,94 +250,218 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
         }
     }
 
+    val categories = listOf("Facilities", "Equipment", "Safety", "Plumbing", "Furniture", "Other")
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Header
                 Text(
-                    text = "Upload School Complaint",
+                    text = "Report School Issue",
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    fontWeight = FontWeight.Bold,
+                    color = SkyBlue
                 )
 
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+                // Form fields with more visual space
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Issue Title") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = SkyBlue,
+                        cursorColor = SkyBlue
+                    )
                 )
+
+                // Category selection
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Category",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        categories.take(3).forEach { category ->
+                            val isSelected = selectedCategory == category
+                            Button(
+                                onClick = { selectedCategory = category },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) SkyBlue else Color.LightGray,
+                                    contentColor = if (isSelected) Color.White else Color.Black
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = category,
+                                    fontSize = MaterialTheme.typography.bodySmall.fontSize
+                                )
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        categories.drop(3).forEach { category ->
+                            val isSelected = selectedCategory == category
+                            Button(
+                                onClick = { selectedCategory = category },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) SkyBlue else Color.LightGray,
+                                    contentColor = if (isSelected) Color.White else Color.Black
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = category,
+                                    fontSize = MaterialTheme.typography.bodySmall.fontSize
+                                )
+                            }
+                        }
+                    }
+                }
 
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    shape = RoundedCornerShape(12.dp),
+                    minLines = 3,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = SkyBlue,
+                        cursorColor = SkyBlue
+                    )
                 )
-
-                OutlinedTextField(
-                    value = location,
-                    onValueChange = { location = it },
-                    label = { Text("Location in School") },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        Icon(Icons.Filled.LocationOn, contentDescription = "Location")
-                    }
-                )
-
-                OutlinedTextField(
-                    value = date,
-                    onValueChange = { date = it },
-                    label = { Text("Date") },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(onClick = { showDatePicker.value = true }) {
-                            Icon(Icons.Filled.DateRange, contentDescription = "Select date")
-                        }
-                    },
-                    readOnly = true
-                )
-
-                Button(
-                    onClick = { pickImageLauncher.launch("image/*") },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(Icons.Filled.Photo, contentDescription = "Pick Image")
-                        Text(selectedImage?.let { "Image Selected" } ?: "Select Image")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = location,
+                        onValueChange = { location = it },
+                        label = { Text("Location") },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            Icon(Icons.Filled.LocationOn, contentDescription = "Location", tint = SkyBlue)
+                        },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = SkyBlue,
+                            cursorColor = SkyBlue
+                        )
+                    )
+
+                    OutlinedTextField(
+                        value = date,
+                        onValueChange = { date = it },
+                        label = { Text("Date") },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            IconButton(onClick = { showDatePicker.value = true }) {
+                                Icon(Icons.Filled.DateRange, contentDescription = "Select date", tint = SkyBlue)
+                            }
+                        },
+                        readOnly = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = SkyBlue,
+                            cursorColor = SkyBlue
+                        )
+                    )
+                }
+
+                // Image selection button with preview placeholder
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                        .padding(16.dp)
+                        .clickable { pickImageLauncher.launch("image/*") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Filled.Photo,
+                            contentDescription = "Pick Image",
+                            tint = if (selectedImage != null) SkyBlue else Color.Gray,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            selectedImage?.let { "Image Selected" } ?: "Tap to Select Image",
+                            color = if (selectedImage != null) SkyBlue else Color.Gray,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Action buttons with more appealing design
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.LightGray,
+                            contentColor = Color.Black
+                        )
                     ) {
-                        Text("Cancel")
+                        Text("Cancel", fontWeight = FontWeight.Medium)
                     }
+
                     Button(
                         onClick = { onSubmit(name, description, location, selectedImage) },
-                        modifier = Modifier.weight(1f).padding(start = 8.dp),
-                        enabled = name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty() && date.isNotEmpty() && selectedImage != null
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        enabled = name.isNotEmpty() && description.isNotEmpty() &&
+                                location.isNotEmpty() && date.isNotEmpty() &&
+                                selectedImage != null && selectedCategory.isNotEmpty(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = SkyBlue,
+                            disabledContainerColor = SkyBlue.copy(alpha = 0.5f)
+                        )
                     ) {
-                        Text("Submit")
+                        Text("Submit", fontWeight = FontWeight.Bold)
                     }
                 }
             }
