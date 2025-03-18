@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import icb.sch.projectrayy.ui.theme.ProjectRayyTheme
+import icb.sch.projectrayy.ui.theme.SkyBlue
 
 class HistoryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,10 +70,9 @@ data class ReportItem(
 fun HistoryScreen(onNavigateUp: () -> Unit) {
     // Sample data
     val reportItems = listOf(
-        ReportItem("1", "Road Damage Report", "There's a large pothole on the main road", "Jl. Sudirman No. 123", "15/03/2025", "In Progress"),
-        ReportItem("2", "Broken Street Light", "Street light not working near the park", "Taman Kota", "10/03/2025", "Completed"),
-        ReportItem("3", "Garbage Collection Issue", "Garbage hasn't been collected for 3 days", "Perumahan Indah Blok A2", "05/03/2025", "Pending"),
-        ReportItem("4", "Flooding Problem", "Water drainage system is clogged", "Jl. Melati No. 45", "01/03/2025", "In Review")
+        ReportItem("1", "Pintu Asrama Rusak", "Pintu belakang kamar 19 rusak (gagangnya lepas).", "room 19 Aslam", "17/03/2025", "Pending", ),
+        ReportItem("2", "XI D Smart TV", "Smart TV kelas XI D rusak tidak bisa dijalankan", "XI D CLASS", "15/03/2025", "Completed", ),
+        ReportItem("3", "Plafon Masjid Rusak", "Plafon masjid rusak, bagian bannat plafonnya berlubang", "Masjid Miftahul Ulum", "14/03/2025", "Pending", )
     )
 
     Scaffold(
@@ -89,7 +89,7 @@ fun HistoryScreen(onNavigateUp: () -> Unit) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue
+                    containerColor = SkyBlue
                 )
             )
         }

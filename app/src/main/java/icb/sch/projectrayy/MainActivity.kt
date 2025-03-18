@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,13 +39,16 @@ import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -80,8 +86,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import icb.sch.projectrayy.ui.theme.ProjectRayyTheme
@@ -102,6 +110,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+// Data class for school complaints
+data class SchoolComplaint(
+    val id: String,
+    val title: String,
+    val description: String,
+    val location: String,
+    val date: String,
+    val status: String,
+    val category: String
+)
 
 data class DrawerItem(val title: String, val icon: ImageVector, val onClick: () -> Unit)
 data class NavItem(val title: String, val icon: ImageVector)
@@ -242,7 +261,7 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Upload Report",
+                    text = "Upload School Complaint",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -250,7 +269,7 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text("Title") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -265,7 +284,7 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
                 OutlinedTextField(
                     value = location,
                     onValueChange = { location = it },
-                    label = { Text("Location") },
+                    label = { Text("Location in School") },
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
                         Icon(Icons.Filled.LocationOn, contentDescription = "Location")
@@ -323,6 +342,117 @@ fun UploadDialog(onDismiss: () -> Unit, onSubmit: (String, String, String, Uri?)
     }
 }
 
+@Composable
+fun SchoolComplaintCard(complaint: SchoolComplaint) {
+    val statusColor = when (complaint.status) {
+        "Completed" -> Color(0xFF4CAF50) // Green
+        "In Progress" -> Color(0xFF2196F3) // Blue
+        "Pending" -> Color(0xFFFFC107) // Yellow
+        else -> Color(0xFFFF5722) // Orange for "In Review" or others
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.School,
+                    contentDescription = "School Complaint",
+                    tint = SkyBlue,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = complaint.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = complaint.category,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .background(statusColor.copy(alpha = 0.2f), shape = RoundedCornerShape(4.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = complaint.status,
+                        color = statusColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = complaint.description,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = "Location",
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.Gray
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = complaint.location,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Icon(
+                    imageVector = Icons.Filled.DateRange,
+                    contentDescription = "Date",
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.Gray
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = complaint.date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
@@ -331,6 +461,16 @@ fun MainScreen() {
     var selectedNavItem by remember { mutableIntStateOf(1) } // Default to center item (Upload)
     val context = LocalContext.current
     var showUploadDialog by remember { mutableStateOf(false) }
+
+    // Sample data for school complaints
+    val schoolComplaints = listOf(
+        SchoolComplaint("1", "Pintu Asrama Rusak", "Pintu belakang kamar 19 rusak (gagangnya lepas).", "room 19 Aslam", "17/03/2025", "Pending", "Facilities"),
+        SchoolComplaint("2", "XI D Smart TV", "Smart TV kelas XI D rusak tidak bisa dijalankan", "XI D CLASS", "15/03/2025", "Completed", "Equipment"),
+        SchoolComplaint("3", "Plafon Masjid Rusak", "Plafon masjid rusak, bagian bannat plafonnya berlubang", "Masjid Miftahul Ulum", "14/03/2025", "Pending", "Facilities"),
+        SchoolComplaint("4", "Ketertiban Kantin", "Siswa MAN INSAN CENDEKIA tidak tertib dalam mengambil makanan dan minuman dari kantin", "Kantin MAN IC Batam", "13/03/2025", "Completed", "Safety"),
+//        SchoolComplaint("5", "Bathroom Maintenance", "The boys' bathroom on the second floor has a leaky faucet.", "Second Floor, East Wing", "12/03/2025", "In Progress", "Plumbing"),
+//        SchoolComplaint("6", "Unstable Desk", "Several desks in Room 115 are wobbly and need repair.", "Room 115", "10/03/2025", "Pending", "Furniture")
+    )
 
     val drawerItems = listOf(
         DrawerItem("Home", Icons.Filled.Home) {
@@ -355,7 +495,7 @@ fun MainScreen() {
         }
     )
 
-    // Navigation items (swapped position of History and Account)
+    // Navigation items
     val navItems = listOf(
         NavItem("History", Icons.Filled.History),
         NavItem("Upload", Icons.Filled.Upload),
@@ -367,35 +507,33 @@ fun MainScreen() {
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier
-                    .fillMaxWidth(0.65f) // A little more than half the screen width
+                    .fillMaxWidth(0.65f)
                     .fillMaxHeight(),
-                drawerContainerColor = SkyBlue // Update to Sky Blue
+                drawerContainerColor = SkyBlue
             ) {
-                // Add some padding at the top of the drawer
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 48.dp) // Add more top padding
+                        .padding(top = 48.dp)
                 ) {
                     // No text header here as requested
                 }
 
-                // Drawer menu items with custom colors
                 drawerItems.forEach { item ->
                     NavigationDrawerItem(
-                        label = { Text(item.title, color = Color.White) }, // White text
+                        label = { Text(item.title, color = Color.White) },
                         icon = {
                             Icon(
                                 item.icon,
                                 contentDescription = item.title,
-                                tint = Color.White // White icons
+                                tint = Color.White
                             )
                         },
                         selected = false,
                         onClick = item.onClick,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                         colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = SkyBlue, // Update to Sky Blue
+                            unselectedContainerColor = SkyBlue,
                             unselectedIconColor = Color.White,
                             unselectedTextColor = Color.White
                         )
@@ -408,7 +546,7 @@ fun MainScreen() {
             topBar = { MyTopAppBarWithSearch(title = "Lapor Mas KAMAL", drawerState = drawerState) },
             bottomBar = {
                 NavigationBar(
-                    containerColor = SkyBlue, // Update to Sky Blue
+                    containerColor = SkyBlue,
                     contentColor = Color.White
                 ) {
                     navItems.forEachIndexed { index, item ->
@@ -443,8 +581,8 @@ fun MainScreen() {
                 ExtendedFloatingActionButton(
                     onClick = { showUploadDialog = true },
                     icon = { Icon(Icons.Filled.Upload, contentDescription = "Upload") },
-                    text = { Text("Upload Report") },
-                    containerColor = SkyBlue, // Update to Sky Blue
+                    text = { Text("Report Issue") },
+                    containerColor = SkyBlue,
                     contentColor = Color.White
                 )
             }
@@ -453,15 +591,26 @@ fun MainScreen() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
+                    .background(Color.White)
             ) {
-                // Main content area
-                Text(
-                    text = "Main Content Area",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "School Complaints Feed",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    LazyColumn {
+                        items(schoolComplaints) { complaint ->
+                            SchoolComplaintCard(complaint)
+                        }
+                    }
+                }
             }
 
             if (showUploadDialog) {
