@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,12 +33,13 @@ import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
@@ -51,12 +51,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
@@ -79,6 +81,7 @@ class MainActivity : ComponentActivity() {
 }
 
 data class DrawerItem(val title: String, val icon: ImageVector, val onClick: () -> Unit)
+data class NavItem(val title: String, val icon: ImageVector)
 
 // Define a custom green color
 val customGreen = Color(0xFF2E7D32) // Dark Green
@@ -167,6 +170,7 @@ fun MyTopAppBarWithSearch(title: String, drawerState: DrawerState) {
 fun MainScreen() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var selectedNavItem by remember { mutableIntStateOf(1) } // Default to center item (Upload)
 
     val drawerItems = listOf(
         DrawerItem("Home", Icons.Filled.Home) {
@@ -189,6 +193,13 @@ fun MainScreen() {
                 drawerState.close()
             }
         }
+    )
+
+    // Navigation items (swapped position of History and Account)
+    val navItems = listOf(
+        NavItem("History", Icons.Filled.History),
+        NavItem("Upload", Icons.Filled.Upload),
+        NavItem("Account", Icons.Filled.AccountCircle)
     )
 
     ModalNavigationDrawer(
@@ -234,113 +245,41 @@ fun MainScreen() {
         },
     ) {
         Scaffold(
-            topBar = { MyTopAppBarWithSearch(title = "Lapor Mas KAMAL", drawerState = drawerState) }
+            topBar = { MyTopAppBarWithSearch(title = "Lapor Mas KAMAL", drawerState = drawerState) },
+            bottomBar = {
+                NavigationBar(
+                    containerColor = customGreen,
+                    contentColor = Color.White
+                ) {
+                    navItems.forEachIndexed { index, item ->
+                        NavigationBarItem(
+                            icon = {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title
+                                )
+                            },
+                            label = { Text(item.title) },
+                            selected = selectedNavItem == index,
+                            onClick = { selectedNavItem = index }
+                        )
+                    }
+                }
+            }
         ) { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(Color.White)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center
             ) {
                 // Main content area
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Main content (you can put your content here)
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Main Content Area", style = MaterialTheme.typography.bodyLarge)
-                    }
-
-                    // Bottom navigation buttons
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Account Login button (Left)
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            IconButton(
-                                onClick = { /* Handle account login click */ },
-                                modifier = Modifier
-                                    .background(customGreen.copy(alpha = 0.1f), CircleShape)
-                                    .padding(8.dp)
-                            ) {
-                                Icon(
-                                    Icons.Filled.AccountCircle,
-                                    contentDescription = "Account Login",
-                                    tint = customGreen,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                "Account",
-                                style = MaterialTheme.typography.bodySmall,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        // Upload button (Middle)
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            FloatingActionButton(
-                                onClick = { /* Handle upload click */ },
-                                containerColor = customGreen,
-                                contentColor = Color.White
-                            ) {
-                                Icon(
-                                    Icons.Filled.Upload,
-                                    contentDescription = "Upload",
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                "Upload",
-                                style = MaterialTheme.typography.bodySmall,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        // History button (Right)
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            IconButton(
-                                onClick = { /* Handle history click */ },
-                                modifier = Modifier
-                                    .background(customGreen.copy(alpha = 0.1f), CircleShape)
-                                    .padding(8.dp)
-                            ) {
-                                Icon(
-                                    Icons.Filled.History,
-                                    contentDescription = "History",
-                                    tint = customGreen,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                "History",
-                                style = MaterialTheme.typography.bodySmall,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
+                Text(
+                    text = "Main Content Area",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
