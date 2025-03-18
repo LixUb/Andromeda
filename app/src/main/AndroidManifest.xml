@@ -12,17 +12,39 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectRayy"
         tools:targetApi="31">
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.ProjectRayy">
+            android:theme="@style/Theme.ProjectRayy"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Login Activity -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ProjectRayy"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- History Activity -->
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ProjectRayy"
+            android:windowSoftInputMode="adjustResize" />
+
     </application>
+
+    <!-- Add permissions for camera, storage, and location if needed -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- For devices running Android 12 or lower -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
 </manifest>
