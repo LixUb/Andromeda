@@ -39,6 +39,12 @@
             android:theme="@style/Theme.ProjectRayy"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".AccountActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ProjectRayy"
+            android:windowSoftInputMode="adjustResize" />
+
     </application>
 
     <!-- Add permissions for camera, storage, and location if needed -->

@@ -65,6 +65,10 @@ import icb.sch.projectrayy.ui.theme.ProjectRayyTheme
 import icb.sch.projectrayy.ui.theme.SkyBlue
 
 class LoginActivity : ComponentActivity() {
+    // Hardcoded credentials
+    private val validEmail = "Lixub@Camel.org"
+    private val validPassword = "08976453"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -72,19 +76,28 @@ class LoginActivity : ComponentActivity() {
             ProjectRayyTheme {
                 LoginScreen(
                     onNavigateUp = { finish() },
-                    onLoginSuccess = { navigateToHome() },
+                    onLoginAttempt = { email, password -> validateLogin(email, password) },
                     onSignUpClick = { navigateToSignUp() }
                 )
             }
         }
     }
 
-    private fun navigateToHome() {
-        // Implement navigation to home screen
+    private fun validateLogin(email: String, password: String) {
+        if (email == validEmail && password == validPassword) {
+            navigateToAccount()
+        } else {
+            Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToAccount() {
         Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-        // Intent to home activity would go here
-        // startActivity(Intent(this, HomeActivity::class.java))
-        // finish()
+        // For now, we'll just show a toast, but you should replace this with actual navigation
+        // to your account menu activity
+        val intent = Intent(this, AccountActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun navigateToSignUp() {
@@ -99,7 +112,7 @@ class LoginActivity : ComponentActivity() {
 @Composable
 fun LoginScreen(
     onNavigateUp: () -> Unit,
-    onLoginSuccess: () -> Unit,
+    onLoginAttempt: (String, String) -> Unit,
     onSignUpClick: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -230,7 +243,7 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { onLoginSuccess() },
+                        onClick = { onLoginAttempt(email, password) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
