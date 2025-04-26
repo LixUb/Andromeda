@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "icb.sch.projectrayy.app-mergeDebugResources-47:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "/home/rayy/.gradle/caches/8.11.1/transforms/8180335adc4229b04636baf90319fc4f/transformed/material3-release/res/values-v30/values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}

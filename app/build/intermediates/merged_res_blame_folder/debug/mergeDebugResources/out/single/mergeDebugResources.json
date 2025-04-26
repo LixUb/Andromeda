@@ -1,0 +1,74 @@
+[
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/xml_data_extraction_rules.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/drawable_placeholder_image.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/drawable/placeholder_image.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "icb.sch.projectrayy.app-debug-49:/drawable_profile_photo.png.flat",
+        "source": "icb.sch.projectrayy.app-main-51:/drawable/profile_photo.png"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/xml_backup_rules.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/drawable_ic_launcher_background.xml.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-debug-49:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "/home/rayy/.gradle/daemon/8.11.1/icb.sch.projectrayy.app-main-51:/mipmap-hdpi/ic_launcher.webp"
+    }
+]
